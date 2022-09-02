@@ -1,0 +1,203 @@
+<!DOCTYPE html5>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X O Game</title>
+    <style>
+        :root {
+    --color: rgb(200, 200, 200);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: default;
+}
+*::selection {
+    display: none;
+}
+body {
+    display: grid;
+    grid-template-columns: repeat(3, calc(100% / 3));
+    background-color: #333;
+    place-items: center;
+}
+#container {
+    display: grid;
+    background-color: #444;
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(3, 120px);
+    gap: 10px;
+    padding: 10px;
+    box-shadow: 0 0 25px;
+    width: fit-content;
+}
+.item {
+    background-color: #222;
+    color: var(--color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5em;
+    cursor: pointer;
+}
+#player {
+    color: var(--color);
+    font-size: 1.5em;
+    text-align: center;
+}
+#player h2 {
+    margin-bottom: 10px;
+}
+#player span {
+    font-weight: bold;
+    color: goldenrod;
+    font-size: 1.5em;
+}
+#win-con {
+    text-align: center;
+}
+#win-con h2{
+    color: goldenrod;
+    font-size: 3em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+#win-con > span {
+    background-image: linear-gradient(45deg, gold 60%, white 90%);
+    padding: 10px 20px;
+    border-radius: 100px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    -ms-border-radius: 100px;
+    -o-border-radius: 100px;
+    cursor: pointer;
+    color: #4e1313;
+    position: relative;
+    transition: .5s;
+    -webkit-transition: .5s;
+    -moz-transition: .5s;
+    -ms-transition: .5s;
+    -o-transition: .5s;
+}
+#win-con > span::before {
+    content: "";
+    position: absolute;
+    opacity: .7;
+    top: 10;
+    right: 15;
+    box-shadow:     0 0 10px 10px white,    0 0 20px 10px white,    0 0 30px 10px white    ;
+}
+#win-con > span:hover {
+    background-image: linear-gradient(45deg, white 30%, gold 50%);
+}
+#win-con > span:hover::before {
+    right: 85%;
+    top: 50%;
+}
+    </style>
+</head>
+<body>
+    <script>
+        document.body.innerHTML = `
+<div id="player">
+    <h2>Player One:</h2>
+    <span>X</span>
+</div>
+<div id="container">
+    ${`<div class="item"></div>`.repeat(9)}
+</div>
+<div id="win-con">
+    <h2></h2>
+    <span>Play again</span>
+</div>
+`;
+
+let pTurn = document.getElementById("player").children[0];
+let typeOfP = document.getElementById("player").children[1];
+let items = document.getElementsByClassName("item");
+let winCon = document.getElementById("win-con")
+let winner = winCon.children[0];
+let playAgain = winCon.children[1];
+let full = true;
+
+winCon.style.display = "none";
+
+let turnOfP = "X";
+for (let i = 0; i < items.length; i++) {
+    items[i].onclick = _ => {
+        if (items[i].textContent !== "X" & items[i].textContent !== "O" & !isItEnded()) {
+            items[i].textContent = turnOfP;
+            if (turnOfP === "X") {
+                turnOfP = "O";
+            } else {
+                turnOfP = "X";
+            };
+            typeOfP.textContent = turnOfP;
+            if (turnOfP === "X") {
+                pTurn.textContent = "Player One:"
+            } else {
+                pTurn.textContent = "Player Two:"
+            } 
+            if (isItEnded()) {
+                if (turnOfP === "X") {
+                turnOfP = "O";
+                } else {
+                turnOfP = "X"
+                }
+                winCon.style.display = "initial";
+                if (full) {
+                    winCon.children[0].textContent = "Tai";
+                } else {
+                    winCon.children[0].textContent = `${turnOfP} Wins`;
+                }
+            } 
+        }
+    };
+};
+
+function isItEnded() {
+    for (let i = 0; i < 7; i += 3) {
+        if (items[i].textContent === items[i + 1].textContent & items[i].textContent === items[i + 2].textContent & items[i].textContent !== "") {
+            return true;
+        };
+    };
+    for (let i = 0; i < 3; i++) {
+        if (items[i].textContent === items[i + 3].textContent & items[i].textContent === items[i + 6].textContent & items[i].textContent !== "") {
+            return true
+        }
+    };
+    full = true;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].textContent.length === 0) {
+            full = false;
+        };
+    }
+    if (full) {
+        return true;
+    }
+    if (items[0].textContent !== "" & items[0].textContent === items[4].textContent & items[0].textContent === items[8].textContent) {
+        return true
+    };
+    if (items[2].textContent !== "" & items[2].textContent === items[4].textContent & items[2].textContent === items[6].textContent) {
+        return true
+    }
+    return false
+};
+
+playAgain.onclick = function () {
+    for (let i = 0; i < items.length; i++) {
+        items[i].textContent = "";
+    };
+    turnOfP = "X";
+    winCon.style.display = "none";
+    full = true;
+    pTurn.textContent = "Player One";
+    typeOfP.textContent = "X";
+};
+    </script>
+</body>
+</html>
